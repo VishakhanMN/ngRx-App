@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
+import { Observable, Subscription } from 'rxjs';
+import { CounterModel } from 'src/app/shared/store/counter-model';
 
 @Component({
   selector: 'app-counter-display',
@@ -8,16 +10,28 @@ import { Store } from '@ngrx/store';
 })
 export class CounterDisplayComponent implements OnInit {
 
-  counterDisplay!: number;
+  constructor(private store:Store<{counter:CounterModel}>){}
 
-  constructor(private store:Store<{counter:{counter:number}}>){}
+  counterDisplay!: number;
+  channelName: string = '';
+  counterSubscribe !: Subscription;
+  counter$ !:Observable<CounterModel>
 
 
   ngOnInit(): void {
-    this.store.select('counter').subscribe(data=>{
+    /* We can either use .subscribe or Use Observables */
+    /* this.counterSubscribe = this.store.select('counter').subscribe(data=>{
       this.counterDisplay = data.counter;
+      this.channelName = data.channelName;
+    }) */
+    
+    this.counter$ = this.store.select('counter')
+  }
 
-    })
+  ngOnDestroy(){
+    /* if(this.counterSubscribe){
+      this.counterSubscribe.unsubscribe();
+    } */
   }
 
 }
